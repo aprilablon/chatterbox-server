@@ -50,26 +50,26 @@ module.exports.requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  if (request.method === 'GET') {
+  if (request.method === 'OPTIONS') {
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify(body));
+  } else if (request.method === 'GET') {
     if (request.url === '/classes/messages') {
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify(body));
     } else {
-      console.log('boo!');
       response.writeHead(404, headers);
       response.end();
     }
   } else if (request.method === 'POST') {
     if (request.url === '/classes/messages') {
-      // body.results.push(request._postData);
       request.on('data', function(chunk) {
         body.results.push(JSON.parse(chunk));
       });
-      console.log(body);
       response.writeHead(201, headers);
       response.end();
     } else {
@@ -78,17 +78,6 @@ module.exports.requestHandler = function(request, response) {
       response.end();
     }
   }
-  // request.on('error', function(err) {
-  //   console.error(err.stack);
-  // });
-
-  // var body = [];
-  // request.on('data', function(chunk) {
-  //   body.push(chunk);
-  // }).on('end', function() {
-  //   body = Buffer.concat(body).toString();
-  // });
-
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
