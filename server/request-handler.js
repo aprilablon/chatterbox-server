@@ -55,8 +55,13 @@ module.exports.requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   if (request.method === 'OPTIONS') {
-    response.writeHead(statusCode, headers);
-    response.end(JSON.stringify(body));
+    if (request.url === '/classes/messages') {
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify(body));
+    } else {
+      response.writeHead(404, headers);
+      response.end();
+    }
   } else if (request.method === 'GET') {
     if (request.url === '/classes/messages') {
       response.writeHead(statusCode, headers);
@@ -71,10 +76,9 @@ module.exports.requestHandler = function(request, response) {
         body.results.push(JSON.parse(chunk));
       });
       response.writeHead(201, headers);
-      response.end();
+      response.end(JSON.stringify(body));
     } else {
       response.writeHead(404, headers);
-      console.log('we did not like your message');
       response.end();
     }
   }
